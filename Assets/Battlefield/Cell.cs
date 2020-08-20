@@ -28,7 +28,7 @@ public class Cell : MonoBehaviour
 		return (Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) + Mathf.Abs(a.z - b.z)) / 2;
 	}
 
-	private Vector2Int Cube2EvenCol(Vector3Int cubeCoordinate)
+	public static Vector2Int Cube2EvenCol(Vector3Int cubeCoordinate)
 	{
 		var col = cubeCoordinate.x;
 		var row = cubeCoordinate.z + (cubeCoordinate.x + (cubeCoordinate.x & 1)) / 2;
@@ -42,6 +42,17 @@ public class Cell : MonoBehaviour
 		var y = -x - z;
 
 		return new Vector3Int(x, y, z);
+	}
+
+	public static int Point2Index(Vector2Int point, int mapWidth)
+	{
+		return point.y + point.x * mapWidth;
+	}
+	
+	public static int Point2Index(Vector3Int point, int mapWidth)
+	{
+		var offsetPoint = Cube2EvenCol(point);
+		return Point2Index(offsetPoint, mapWidth);
 	}
 }
 public class CellConfig

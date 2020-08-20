@@ -7,7 +7,7 @@ using UnityEditor.SceneManagement;
 [CustomEditor(typeof(Battlefield))]
 public class BattleFieldEditor : EditorWindow
 {
-	private int width = 10, breath = 10, cellSize = 1;
+	private int width = 10, bredth = 10, cellSize = 1;
 	private Material defaultMaterial;
 	private Battlefield battlefield;
 	[MenuItem("RPG Arena/Battlefield Generator")]
@@ -33,20 +33,20 @@ public class BattleFieldEditor : EditorWindow
 				var go = new GameObject("Battlefield");
 				Undo.RecordObject(go, "battlefield");
 				battlefield = go.AddComponent<Battlefield>();
-				battlefield.tag = "Battlefield";
 			}
 			return;
 		}
 
 		width = EditorGUILayout.IntField("Width", width);
-		breath = EditorGUILayout.IntField("Breath", breath);
+		bredth = EditorGUILayout.IntField("Breath", bredth);
 		cellSize = EditorGUILayout.IntField("Size", cellSize);
 		defaultMaterial = EditorGUILayout.ObjectField("Default Material", defaultMaterial, typeof(Material), false) as Material;
 		if (GUILayout.Button("Create Cells"))
 		{
+			battlefield.Initialize(width, bredth);
 			for (var x = 0; x < width; x++)
 			{
-				for (var z = 0; z < breath; z++)
+				for (var z = 0; z < bredth; z++)
 				{
 					var newCell = new GameObject(string.Format("Cell [{0}, {1}]", x, z)).AddComponent<Cell>();
 					newCell.SetUp(cellSize, new Vector2Int(x, z));
@@ -60,7 +60,7 @@ public class BattleFieldEditor : EditorWindow
 		{
 			for (var x = 0; x < width; x++)
 			{
-				for (var z = 0; z < breath; z++)
+				for (var z = 0; z < bredth; z++)
 				{
 					battlefield.cellData.Clear();
 				}
@@ -70,7 +70,14 @@ public class BattleFieldEditor : EditorWindow
 		
 		if (GUILayout.Button("Test Path"))
 		{
-			battlefield.Search(battlefield.cellData.Find(c => c.point == new Vector2Int(0, 1)), 5).ForEach(pathCell => pathCell.GetComponent<MeshRenderer>().material.SetColor("_Color", Color.green));
+			var startIndex = Cell.Point2Index(new Vector2Int(0, 1), width);
+			var endIndex = Cell.Point2Index(new Vector2Int(3, 6), width);
+			var materialPropertyBlock = new MaterialPropertyBlock();
+			materialPropertyBlock.SetColor("_Color", Color.green);
+			battlefield.FindPath(battlefield.cellData[startIndex], battlefield.cellData[endIndex]).ForEach(
+				pathCell => 
+				pathCell.GetComponent<MeshRenderer>().SetPropertyBlock(materialPropertyBlock)
+			);
 		}
 	}
 }
