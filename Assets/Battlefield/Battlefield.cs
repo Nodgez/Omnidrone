@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 
 [DisallowMultipleComponent]
+
 public class Battlefield : MonoBehaviour
 {
 	public List<Cell> cellData;
@@ -42,7 +43,7 @@ public class Battlefield : MonoBehaviour
 
 	private void RenderCell(Cell cell, Material defaultMaterial)
 	{
-		cell.transform.SetParent(this.transform);
+		cell.transform.SetParent(this.transform.Find("Cells"));
 
 		var x = cell.point.x * CellConfig.Instance.width * 0.75f;
 		var z = cell.point.y * CellConfig.Instance.height + (cell.point.x % 2 == 0 ? CellConfig.Instance.height * 0.5f : 0);
@@ -52,6 +53,9 @@ public class Battlefield : MonoBehaviour
 		meshFilter.mesh = hexMesh;
 		var meshRenderer = cell.gameObject.AddComponent<MeshRenderer>();
 		meshRenderer.sharedMaterial = defaultMaterial;
+		var meshCollider = cell.gameObject.AddComponent<MeshCollider>();
+		meshCollider.sharedMesh = hexMesh;
+		cell.gameObject.layer = LayerMask.NameToLayer("Battlefield");
 	}
 
 	private void UpdateCell(Cell cell)
@@ -84,7 +88,6 @@ public class Battlefield : MonoBehaviour
 
 		return visited;
 	}
-
 	public List<Cell> FindPath(Cell start, Cell end)
 	{
 		var graph = Search(start, 5);
@@ -140,13 +143,14 @@ public class Battlefield : MonoBehaviour
 #if UNITY_EDITOR
 	private void OnDrawGizmos()
 	{
-		//for (int i = 0; i < transform.childCount; i++)
-		//{
-		//	var cubePoint = Cell.EvenCol2Cube(cellData[i].point);
-		//	Handles.Label(transform.GetChild(i).transform.position + new Vector3(-0.5f, 0, 0.5f), "X: " + cubePoint.x.ToString());
-		//	Handles.Label(transform.GetChild(i).transform.position + new Vector3(0, 0, -0.5f), "Y: " + cubePoint.y.ToString());
-		//	Handles.Label(transform.GetChild(i).transform.position + new Vector3(0.5f, 0, 0.5f), "Z: " + cubePoint.z.ToString());
-		//}
+		var cellsParent = transform.Find("Cells");
+		for (int i = 0; i < cellsParent.childCount; i++)
+		{
+			var cubePoint = Cell.EvenCol2Cube(cellData[i].point);
+			Handles.Label(cellsParent.GetChild(i).transform.position + new Vector3(-0.5f, 0, 0.5f), "X: " + cubePoint.x.ToString());
+			Handles.Label(cellsParent.GetChild(i).transform.position + new Vector3(0, 0, -0.5f), "Y: " + cubePoint.y.ToString());
+			Handles.Label(cellsParent.GetChild(i).transform.position + new Vector3(0.5f, 0, 0.5f), "Z: " + cubePoint.z.ToString());
+		}
 
 		//for (int i = 0; i < transform.childCount; i++)
 		//{

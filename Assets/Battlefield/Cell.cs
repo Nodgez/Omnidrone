@@ -2,15 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cell : MonoBehaviour
+public class Cell : MonoBehaviour, IInteractable
 {
+	public CellUnit CellUnit { get; set; }
+
 	public Vector2Int point;
 	public Vector3Int cubePoint;
-	public bool Occupied;
+	public bool Occupied
+	{
+		get { return CellUnit != null; }
+	}
 	public void SetUp(float size, Vector2Int center)
 	{
 		this.point = center;
 		this.cubePoint = EvenCol2Cube(point);
+	}
+
+	public void Interact()
+	{
+		throw new System.NotImplementedException();
 	}
 
 	public static Vector3Int[] CubicDirections = new Vector3Int[]
@@ -54,6 +64,7 @@ public class Cell : MonoBehaviour
 		var offsetPoint = Cube2EvenCol(point);
 		return Point2Index(offsetPoint, mapWidth);
 	}
+
 }
 public class CellConfig
 {
