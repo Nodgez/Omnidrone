@@ -8,15 +8,16 @@ public class PlayerInput : MonoBehaviour
 	public LayerMask detectionMask;
 	private void Update()
 	{
-		if (Input.GetMouseButtonDown(0))
+		RaycastHit hitinfo;
+		var ray = raycastCamera.ScreenPointToRay(Input.mousePosition);
+		if (Physics.Raycast(ray, out hitinfo, Mathf.Infinity, detectionMask))
 		{
-			RaycastHit hitinfo;
-			var ray = raycastCamera.ScreenPointToRay(Input.mousePosition);
-			if (Physics.Raycast(ray, out hitinfo, Mathf.Infinity, detectionMask))
+			if (Input.GetMouseButtonDown(0))
 			{
 				var interactable = hitinfo.collider.GetComponent<IInteractable>();
 				interactable.Interact();
 			}
 		}
+
 	}
 }

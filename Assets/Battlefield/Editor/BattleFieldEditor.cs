@@ -48,11 +48,11 @@ public class BattleFieldEditor : EditorWindow
 				var selectedCellObjects = Selection.objects.Where(x => IsSelectedObjectCell(x));
 				foreach (var cell in selectedCellObjects)
 				{
-					var cellObject = cell as GameObject;
-					var cellComponent = cellObject.GetComponent<Cell>();
-					var cellUnitInstance = PrefabUtility.InstantiatePrefab(prefab,battlefield.transform.Find("Units")) as GameObject;
+					var cellComponent = (cell as GameObject).GetComponent<Cell>();
+					var cellUnitInstance = (PrefabUtility.InstantiatePrefab(prefab, battlefield.transform.Find("Units")) as GameObject).GetComponent<CellUnit>(); ;
 
-					cellComponent.CellUnit = cellUnitInstance.GetComponent<CellUnit>();
+					cellUnitInstance.SetOnCell(cellComponent);
+					cellComponent.cellUnit = cellUnitInstance;
 					cellUnitInstance.transform.position = cellComponent.transform.position;
 				}
 			}
@@ -111,23 +111,23 @@ public class BattleFieldEditor : EditorWindow
 			battlefield.transform.Find("Units").ClearChildrenImmediate();
 		}
 
-		if (GUILayout.Button("Test Path"))
-		{
-			var materialPropertyBlock = new MaterialPropertyBlock();
-			materialPropertyBlock.SetColor("_Color", Color.white);
+		//if (GUILayout.Button("Test Path"))
+		//{
+		//	var materialPropertyBlock = new MaterialPropertyBlock();
+		//	materialPropertyBlock.SetColor("_Color", Color.white);
 
-			battlefield.cellData.ForEach(
-			pathCell =>
-				pathCell.GetComponent<MeshRenderer>().SetPropertyBlock(materialPropertyBlock)
-			);
-				var startIndex = Cell.Point2Index(new Vector2Int(1, 1), width);
-			var endIndex = Cell.Point2Index(new Vector2Int(3, 6), width);
-			materialPropertyBlock.SetColor("_Color", Color.green);
-			battlefield.FindPath(battlefield.cellData[startIndex], battlefield.cellData[endIndex]).ForEach(
-				pathCell =>
-				pathCell.GetComponent<MeshRenderer>().SetPropertyBlock(materialPropertyBlock)
-			);
-		}
+		//	battlefield.cellData.ForEach(
+		//	pathCell =>
+		//		pathCell.GetComponent<MeshRenderer>().SetPropertyBlock(materialPropertyBlock)
+		//	);
+		//		var startIndex = Cell.Point2Index(new Vector2Int(1, 1), width);
+		//	var endIndex = Cell.Point2Index(new Vector2Int(3, 6), width);
+		//	materialPropertyBlock.SetColor("_Color", Color.green);
+		//	battlefield.FindPath(battlefield.cellData[startIndex], battlefield.cellData[endIndex]).ForEach(
+		//		pathCell =>
+		//		pathCell.GetComponent<MeshRenderer>().SetPropertyBlock(materialPropertyBlock)
+		//	);
+		//}
 		GUILayout.EndVertical();
 	}
 

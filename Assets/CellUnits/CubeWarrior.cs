@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Wall : CellUnit
+public class CubeWarrior : CellUnit
 {
+
 }

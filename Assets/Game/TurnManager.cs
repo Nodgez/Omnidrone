@@ -4,6 +4,30 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
-	public enum TurnPhase { Move, Attack, Wrapup }
-    public int TurnNumber { get; set; }
+	private static TurnManager instance;
+	public static TurnManager Instance
+	{
+		get { return instance; }
+	}
+	public int TurnNumber { get; private set; }
+	public ArmyController[] armies;
+	public ArmyController ActiveArmy { get; private set; }
+
+	public void Start()
+	{
+		instance = this;
+		ActiveArmy = armies[TurnNumber % armies.Length];
+	}
+
+	public IEnumerator RunTurn()
+	{
+		yield return null;
+
+		TurnNumber++;
+	}
+
+	public void EndTurn()
+	{
+		TurnNumber++;
+	}
 }

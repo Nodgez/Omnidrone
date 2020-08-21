@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class Cell : MonoBehaviour, IInteractable
 {
-	public CellUnit CellUnit { get; set; }
-
+	public CellUnit cellUnit;
 	public Vector2Int point;
 	public Vector3Int cubePoint;
 	public bool Occupied
 	{
-		get { return CellUnit != null; }
+		get { return cellUnit != null; }
 	}
 	public void SetUp(float size, Vector2Int center)
 	{
@@ -20,7 +19,11 @@ public class Cell : MonoBehaviour, IInteractable
 
 	public void Interact()
 	{
-		throw new System.NotImplementedException();
+		print("Cell interacted with");
+		if (Occupied)
+			TurnManager.Instance.ActiveArmy.SelectUnit(cellUnit);
+		else
+			TurnManager.Instance.ActiveArmy.MoveSelectedUnit(this);
 	}
 
 	public static Vector3Int[] CubicDirections = new Vector3Int[]
@@ -56,7 +59,7 @@ public class Cell : MonoBehaviour, IInteractable
 
 	public static int Point2Index(Vector2Int point, int mapWidth)
 	{
-		return point.y + point.x * mapWidth;
+		return point.y + (point.x * mapWidth);
 	}
 	
 	public static int Point2Index(Vector3Int point, int mapWidth)
@@ -65,6 +68,10 @@ public class Cell : MonoBehaviour, IInteractable
 		return Point2Index(offsetPoint, mapWidth);
 	}
 
+	public override string ToString()
+	{
+		return point.ToString() + " ";
+	}
 }
 public class CellConfig
 {
