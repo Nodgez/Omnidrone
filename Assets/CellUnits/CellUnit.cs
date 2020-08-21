@@ -4,9 +4,19 @@ using UnityEngine;
 
 public abstract class CellUnit : MonoBehaviour
 {
+	public CellUnitStats unitStats;
 	public Cell currentCell;
+
+	private int currentMoveCount;
+
+	private void Awake()
+	{
+		RefreshStats();
+	}
 	public void MoveAlongPath(Stack<Cell> path)
 	{
+		if (currentMoveCount == 0)
+			return;
 		StartCoroutine(CO_MoveAlongPath(path));
 	}
 
@@ -24,7 +34,14 @@ public abstract class CellUnit : MonoBehaviour
 				transform.position = Vector3.Lerp(start, target.transform.position, t);
 				yield return null;
 			}
+			currentMoveCount--;
+			currentCell = target;
 		}
+	}
+
+	public void RefreshStats()
+	{
+		currentMoveCount = unitStats.moveRange;
 	}
 
 #if UNITY_EDITOR

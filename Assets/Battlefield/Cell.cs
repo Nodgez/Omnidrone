@@ -7,9 +7,16 @@ public class Cell : MonoBehaviour, IInteractable
 	public CellUnit cellUnit;
 	public Vector2Int point;
 	public Vector3Int cubePoint;
+
+	public MeshRenderer meshRenderer { get; private set; }
 	public bool Occupied
 	{
 		get { return cellUnit != null; }
+	}
+
+	private void Awake()
+	{
+		meshRenderer = GetComponent<MeshRenderer>();
 	}
 	public void SetUp(float size, Vector2Int center)
 	{
