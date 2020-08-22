@@ -97,7 +97,7 @@ public class Battlefield : MonoBehaviour
 		return visited;
 	}
 
-	public List<Cell> GetTilesInRange(Cell center, int range)
+	public List<Cell> GetTilesInRange(Cell center, int range, Predicate<Cell> predicate)
 	{
 		var results = new List<Cell>();
 		for (var x = -range; x <= range; x++)
@@ -107,13 +107,22 @@ public class Battlefield : MonoBehaviour
 					if (x + y + z == 0)
 					{
 						var cubicIndex = center.cubePoint + new Vector3Int(x, y, z);
-						var cellAtDistance = cellData[Cell.Point2Index(cubicIndex, width)];
-						
-						results.Add(cellAtDistance);
+						var index = Cell.Point2Index(cubicIndex, width);
+						if (index < 0 || index > cellData.Count - 1)
+							continue;
+						var cellAtDistance = cellData[index];
+
+						if (predicate(cellAtDistance))
+							results.Add(cellAtDistance);
 					}
 				}
 
 		return results;
+	}
+
+	public List<Cell> GetTilesInRange(Cell center, int range)
+	{
+		return GetTilesInRange(center, range, (x) => { return true; });
 	}
 	public Stack<Cell> FindPath(Cell start, Cell end, int range)
 	{
@@ -135,8 +144,6 @@ public class Battlefield : MonoBehaviour
 
 			foreach (var neighbour in neighbours)
 			{
-				if (neighbour.Occupied)
-					continue;
 				if (!walkedPath.ContainsKey(neighbour))
 				{
 					frontier.Enqueue(neighbour);
@@ -166,12 +173,8 @@ public class Battlefield : MonoBehaviour
 		for (var dir = 0; dir < Cell.CubicDirections.Length; dir++)
 		{
 			var neightborCube = cell.cubePoint + Cell.CubicDirections[dir];
-			var neightborOffset = Cell.Cube2EvenCol(neightborCube);
-			var key = Cell.Point2Index(neightborOffset, width);
-
-			//print(string.Format("Neighbor search values: \n\t{0}, \n\t{1}, \n\t{2}", neightborCube.ToString(), neightborOffset.ToString(), key.ToString()));
-
-			if (!(key < cellData.Count && key > -1))
+			var key = Cell.Point2Index(neightborCube, width);
+			if (key < 0 || key > cellData.Count - 1)
 				continue;
 
 			neighbours.Add(cellData[key]);

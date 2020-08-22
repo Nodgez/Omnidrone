@@ -28,9 +28,11 @@ public class Cell : MonoBehaviour, IInteractable
 	{
 		print("Cell interacted with");
 		if (Occupied)
+		{
 			TurnManager.Instance.ActiveArmy.SelectUnit(cellUnit);
+		}
 		else
-			TurnManager.Instance.ActiveArmy.MoveSelectedUnit(this);
+			TurnManager.Instance.ActiveArmy.MoveSelectedUnit(this);//might move this down a level into the Army controller
 	}
 
 	public static Vector3Int[] CubicDirections = new Vector3Int[]

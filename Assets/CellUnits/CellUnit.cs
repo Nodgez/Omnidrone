@@ -7,7 +7,8 @@ public abstract class CellUnit : MonoBehaviour
 	public CellUnitStats unitStats;
 	public Cell currentCell;
 
-	private int currentMoveCount;
+	public int CurrentMoveCount { get; private set; }
+	public int CurrentHealth { get; private set; }
 
 	private void Awake()
 	{
@@ -15,7 +16,7 @@ public abstract class CellUnit : MonoBehaviour
 	}
 	public void MoveAlongPath(Stack<Cell> path)
 	{
-		if (currentMoveCount <= 0)
+		if (CurrentMoveCount <= 0)
 			return;
 		StartCoroutine(CO_MoveAlongPath(path));
 	}
@@ -25,6 +26,7 @@ public abstract class CellUnit : MonoBehaviour
 		while (path.Count > 0)
 		{
 			var target = path.Pop();
+			target.cellUnit = this;
 
 			float t = 0;
 			Vector3 start = transform.position;
@@ -34,14 +36,27 @@ public abstract class CellUnit : MonoBehaviour
 				transform.position = Vector3.Lerp(start, target.transform.position, t);
 				yield return null;
 			}
-			currentMoveCount--;
+			CurrentMoveCount--;
+
+			currentCell.cellUnit = null;
 			currentCell = target;
 		}
 	}
 
 	public void RefreshStats()
 	{
-		currentMoveCount = unitStats.moveRange;
+		CurrentMoveCount = unitStats.moveRange;
+	}
+
+	public void AlterHealth(int changeInHealth)
+	{
+		CurrentHealth += changeInHealth;
+
+		if (CurrentHealth == 0)
+		{
+			print("Unit Dead");
+			//remove from the army and teh battlefield
+		}
 	}
 
 #if UNITY_EDITOR

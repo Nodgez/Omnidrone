@@ -13,7 +13,7 @@ public class ArmyController : MonoBehaviour
 
 	public int SelectionLimit { get; set; }
 
-	private List<Cell> actionableCellRange = new List<Cell>();
+	private List<Cell> actionableCells = new List<Cell>();
 
 	private void Awake()
 	{
@@ -28,12 +28,12 @@ public class ArmyController : MonoBehaviour
 		if (unit.tag == tag)
 		{
 			selectedUnit = unit;
-			actionableCellRange = Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.unitStats.moveRange);
+			actionableCells = Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.CurrentMoveCount, (x) => { return !x.Occupied; });
 		}
 		else
-			selectedTarget = unit;
+			AttackSelectedUnit(unit);
 
-		SetActionableCellRange();
+		SetActionableCellMarkers();
 	}
 
 	public void RefreshArmy()
@@ -44,18 +44,32 @@ public class ArmyController : MonoBehaviour
 		}
 	}
 
-	private void SetActionableCellRange()
+	private void SetActionableCellMarkers()
 	{
 		var moveMaterial = new MaterialPropertyBlock();
 		moveMaterial.SetColor("_Color", Color.blue);
-		foreach (var cell in actionableCellRange)
-			cell.meshRenderer.SetPropertyBlock(moveMaterial);
+		
+		var attackMaterial = new MaterialPropertyBlock();
+		attackMaterial.SetColor("_Color", Color.red);
+		foreach (var cell in actionableCells)
+		{
+			if (cell.Occupied)
+			{
+				if (!cell.cellUnit.CompareTag(tag))
+					cell.meshRenderer.SetPropertyBlock(attackMaterial);
+			}
+
+			else
+				cell.meshRenderer.SetPropertyBlock(moveMaterial);
+		}
 	}
 	
 	private void ClearActionableCellRange()
 	{
-		foreach (var cell in actionableCellRange)
+		foreach (var cell in actionableCells)
 			cell.meshRenderer.SetPropertyBlock(null);
+
+		actionableCells.Clear();
 	}
 
 	public void MoveSelectedUnit(Cell target)
@@ -67,6 +81,12 @@ public class ArmyController : MonoBehaviour
 		selectedUnit.MoveAlongPath(movePath);
 
 		ClearActionableCellRange();
+	}
+
+	public void AttackSelectedUnit(CellUnit target)
+	{
+		if (selectedUnit != null)
+			target.AlterHealth(selectedUnit.unitStats.damage);
 	}
 
 #if UNITY_EDITOR
