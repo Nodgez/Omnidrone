@@ -8,6 +8,9 @@ public class ArmyController : MonoBehaviour
 	private CellUnit selectedUnit;
 	private CellUnit selectedTarget;
 
+	[SerializeField]
+	private List<CellUnit> army = new List<CellUnit>();
+
 	public int SelectionLimit { get; set; }
 
 	private List<Cell> actionableCellRange = new List<Cell>();
@@ -25,12 +28,20 @@ public class ArmyController : MonoBehaviour
 		if (unit.tag == tag)
 		{
 			selectedUnit = unit;
-			actionableCellRange = Battlefield.Instance.Search(selectedUnit.currentCell, selectedUnit.unitStats.moveRange);
+			actionableCellRange = Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.unitStats.moveRange);
 		}
 		else
 			selectedTarget = unit;
 
 		SetActionableCellRange();
+	}
+
+	public void RefreshArmy()
+	{
+		foreach (var unit in army)
+		{
+			unit.RefreshStats();
+		}
 	}
 
 	private void SetActionableCellRange()
@@ -52,9 +63,16 @@ public class ArmyController : MonoBehaviour
 		if (selectedUnit == null)
 			return;
 		print(string.Format("Moving Unit From: {0} , To: {1} ", selectedUnit.currentCell.ToString(), target.ToString()));
-		var movePath = Battlefield.Instance.FindPath(selectedUnit.currentCell, target);
+		var movePath = Battlefield.Instance.FindPath(selectedUnit.currentCell, target, selectedUnit.unitStats.moveRange);
 		selectedUnit.MoveAlongPath(movePath);
 
 		ClearActionableCellRange();
 	}
+
+#if UNITY_EDITOR
+	public void AppendToArmy(CellUnit cellUnit)
+	{
+		army.Add(cellUnit);
+	}
+	#endif
 }

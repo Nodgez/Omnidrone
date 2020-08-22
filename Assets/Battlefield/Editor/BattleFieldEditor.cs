@@ -14,6 +14,8 @@ public class BattleFieldEditor : EditorWindow
 	private Battlefield battlefield;
 	private Vector2 assetScroll;
 
+	private Dictionary<string, ArmyController> armyControllers = new Dictionary<string, ArmyController>();
+
 	private const string CELL_UNIT_PATH = "/CellUnits/Prefabs/";
 	[MenuItem("RPG Arena/Battlefield Generator")]
 	static void Init()
@@ -25,6 +27,7 @@ public class BattleFieldEditor : EditorWindow
 	public void OnHierarchyChange()
 	{
 		battlefield = GameObject.FindGameObjectWithTag("Battlefield").GetComponent<Battlefield>();
+		armyControllers = FindObjectsOfType<ArmyController>().ToDictionary(x => x.tag);
 		Undo.RecordObject(battlefield.gameObject, "battlefield");
 	}
 
@@ -44,6 +47,7 @@ public class BattleFieldEditor : EditorWindow
 		{
 			if (GUILayout.Button(unit.Name))
 			{
+
 				var prefab = AssetDatabase.LoadAssetAtPath("Assets" + CELL_UNIT_PATH + unit.Name, typeof(GameObject));
 				var selectedCellObjects = Selection.objects.Where(x => IsSelectedObjectCell(x));
 				foreach (var cell in selectedCellObjects)
@@ -54,7 +58,11 @@ public class BattleFieldEditor : EditorWindow
 					cellUnitInstance.SetOnCell(cellComponent);
 					cellComponent.cellUnit = cellUnitInstance;
 					cellUnitInstance.transform.position = cellComponent.transform.position;
+
+					armyControllers[cellUnitInstance.tag].AppendToArmy(cellUnitInstance);
 				}
+
+				EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
 			}
 		}
 

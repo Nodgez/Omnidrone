@@ -96,9 +96,29 @@ public class Battlefield : MonoBehaviour
 
 		return visited;
 	}
-	public Stack<Cell> FindPath(Cell start, Cell end)
+
+	public List<Cell> GetTilesInRange(Cell center, int range)
 	{
-		//var graph = Search(start, 5);
+		var results = new List<Cell>();
+		for (var x = -range; x <= range; x++)
+			for (var y = -range; y <= range; y++)
+				for (var z = -range; z <= range; z++)
+				{
+					if (x + y + z == 0)
+					{
+						var cubicIndex = center.cubePoint + new Vector3Int(x, y, z);
+						var cellAtDistance = cellData[Cell.Point2Index(cubicIndex, width)];
+						
+						results.Add(cellAtDistance);
+					}
+				}
+
+		return results;
+	}
+	public Stack<Cell> FindPath(Cell start, Cell end, int range)
+	{
+		if (Cell.Distance(start.cubePoint, end.cubePoint) > range)
+			return new Stack<Cell>();
 
 		var frontier = new Queue<Cell>();
 		frontier.Enqueue(start);
@@ -110,6 +130,8 @@ public class Battlefield : MonoBehaviour
 			var current = frontier.Dequeue();
 			var neighbours = GetNeighbours(current);
 			//print("neighbors for " + current.ToString() + "(current): " + string.Concat(neighbours));
+			if (Cell.Distance(current.cubePoint, start.cubePoint) >= range)
+				continue;
 
 			foreach (var neighbour in neighbours)
 			{

@@ -15,7 +15,7 @@ public abstract class CellUnit : MonoBehaviour
 	}
 	public void MoveAlongPath(Stack<Cell> path)
 	{
-		if (currentMoveCount == 0)
+		if (currentMoveCount <= 0)
 			return;
 		StartCoroutine(CO_MoveAlongPath(path));
 	}

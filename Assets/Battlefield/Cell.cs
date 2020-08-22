@@ -45,7 +45,7 @@ public class Cell : MonoBehaviour, IInteractable
 
 	public static int Distance(Vector3Int a, Vector3Int b)
 	{
-		return (Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) + Mathf.Abs(a.z - b.z)) / 2;
+		return Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y), Mathf.Abs(a.z - b.z));
 	}
 
 	public static Vector2Int Cube2EvenCol(Vector3Int cubeCoordinate)
