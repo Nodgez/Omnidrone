@@ -144,6 +144,8 @@ public class Battlefield : MonoBehaviour
 
 			foreach (var neighbour in neighbours)
 			{
+				if (neighbour.Occupied)
+					continue;
 				if (!walkedPath.ContainsKey(neighbour))
 				{
 					frontier.Enqueue(neighbour);

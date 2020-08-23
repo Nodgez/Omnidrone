@@ -15,4 +15,4 @@ MonoBehaviour:
   maxHealth: 100
   moveRange: 3
   attackRange: 2
-  damage: 10
+  damage: 50

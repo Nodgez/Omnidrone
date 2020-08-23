@@ -3,22 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ArmyController : MonoBehaviour
+[DisallowMultipleComponent]
+public abstract class ArmyController : MonoBehaviour
 {
 	private CellUnit selectedUnit;
 	private CellUnit selectedTarget;
+	private List<Cell> actionableCells = new List<Cell>();
 
 	[SerializeField]
 	private List<CellUnit> army = new List<CellUnit>();
 
 	public int SelectionLimit { get; set; }
-
-	private List<Cell> actionableCells = new List<Cell>();
-
-	private void Awake()
+	public bool HasLost{ get{ return army.Count > 0; } }
+	public abstract void StartArmy();
+	public abstract void FinalizeArmy();
+	protected virtual void Awake()
 	{
 		SelectionLimit = 1;
+		army.ForEach(unit => unit.onDeath.AddListener(RemoveUnitFromArmy));
 	}
+	
 
 	public void SelectUnit(CellUnit unit)
 	{
@@ -28,12 +32,22 @@ public class ArmyController : MonoBehaviour
 		if (unit.tag == tag)
 		{
 			selectedUnit = unit;
-			actionableCells = Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.CurrentMoveCount, (x) => { return !x.Occupied; });
+			var movementCells = Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.CurrentMovementRange, (x) => { return !x.Occupied; });
+			var enemyCells = Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.AttackRange, (x) => { return x.Occupied && !x.cellUnit.CompareTag(tag); });
+
+			actionableCells = new List<Cell>();
+			actionableCells.AddRange(enemyCells);
+			actionableCells.AddRange(movementCells);
 		}
 		else
 			AttackSelectedUnit(unit);
 
 		SetActionableCellMarkers();
+	}
+
+	public void RemoveUnitFromArmy(CellUnit unitToRemove)
+	{
+		army.Remove(unitToRemove);
 	}
 
 	public void RefreshArmy()
@@ -77,7 +91,7 @@ public class ArmyController : MonoBehaviour
 		if (selectedUnit == null)
 			return;
 		print(string.Format("Moving Unit From: {0} , To: {1} ", selectedUnit.currentCell.ToString(), target.ToString()));
-		var movePath = Battlefield.Instance.FindPath(selectedUnit.currentCell, target, selectedUnit.unitStats.moveRange);
+		var movePath = Battlefield.Instance.FindPath(selectedUnit.currentCell, target, selectedUnit.CurrentMovementRange);
 		selectedUnit.MoveAlongPath(movePath);
 
 		ClearActionableCellRange();
@@ -86,13 +100,25 @@ public class ArmyController : MonoBehaviour
 	public void AttackSelectedUnit(CellUnit target)
 	{
 		if (selectedUnit != null)
-			target.AlterHealth(selectedUnit.unitStats.damage);
+		{
+			selectedUnit.Attack();
+			target.AlterHealth(-selectedUnit.AttackDamage);
+		}
 	}
 
 #if UNITY_EDITOR
 	public void AppendToArmy(CellUnit cellUnit)
 	{
 		army.Add(cellUnit);
+	}
+	
+	public void ClearEmptyUnits()
+	{
+		for (var i = army.Count - 1;i > -1; i--)
+		{
+			if (army[i] == null)
+				army.RemoveAt(i);
+		}
 	}
 	#endif
 }

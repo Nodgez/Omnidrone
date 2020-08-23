@@ -1,14 +1,23 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public abstract class CellUnit : MonoBehaviour
 {
-	public CellUnitStats unitStats;
+	[SerializeField]
+	private CellUnitStats unitStats = null;
 	public Cell currentCell;
 
-	public int CurrentMoveCount { get; private set; }
+	public OnDeath onDeath = new OnDeath();
+
+	public int CurrentMovementRange { get; private set; }
 	public int CurrentHealth { get; private set; }
+	public int AttackRange { get { return unitStats.attackRange; } }
+	public int AttackDamage { get { return unitStats.damage; } }
+
+	public int Attacks = 1;
 
 	private void Awake()
 	{
@@ -16,7 +25,7 @@ public abstract class CellUnit : MonoBehaviour
 	}
 	public void MoveAlongPath(Stack<Cell> path)
 	{
-		if (CurrentMoveCount <= 0)
+		if (CurrentMovementRange <= 0)
 			return;
 		StartCoroutine(CO_MoveAlongPath(path));
 	}
@@ -36,7 +45,7 @@ public abstract class CellUnit : MonoBehaviour
 				transform.position = Vector3.Lerp(start, target.transform.position, t);
 				yield return null;
 			}
-			CurrentMoveCount--;
+			CurrentMovementRange--;
 
 			currentCell.cellUnit = null;
 			currentCell = target;
@@ -45,19 +54,25 @@ public abstract class CellUnit : MonoBehaviour
 
 	public void RefreshStats()
 	{
-		CurrentMoveCount = unitStats.moveRange;
+		Attacks = 1;
+		CurrentMovementRange = unitStats.moveRange;
+		CurrentHealth = unitStats.maxHealth;
 	}
 
 	public void AlterHealth(int changeInHealth)
 	{
 		CurrentHealth += changeInHealth;
 
-		if (CurrentHealth == 0)
+		if (CurrentHealth <= 0)
 		{
+			onDeath?.Invoke(this);
+			Destroy(this.gameObject);
 			print("Unit Dead");
 			//remove from the army and teh battlefield
 		}
 	}
+
+
 
 #if UNITY_EDITOR
 	public void SetOnCell(Cell cell)
@@ -68,5 +83,13 @@ public abstract class CellUnit : MonoBehaviour
 		currentCell = cell;
 		currentCell.cellUnit = this;
 	}
+
+	public void Attack()
+	{
+		Attacks--;
+	}
 #endif
 }
+
+[Serializable]
+public class OnDeath : UnityEvent<CellUnit> { }

@@ -19,15 +19,16 @@ public class TurnManager : MonoBehaviour
 		ActiveArmy = armies[TurnNumber % armies.Length];
 	}
 
-	public IEnumerator RunTurn()
-	{
-		yield return null;
-
-		TurnNumber++;
-	}
-
 	public void EndTurn()
 	{
+		ActiveArmy.FinalizeArmy();
 		TurnNumber++;
+		ActiveArmy = armies[TurnNumber % armies.Length];
+
+		if (ActiveArmy.HasLost)
+		{ 
+			// close the game
+		}
+		ActiveArmy.StartArmy();
 	}
 }

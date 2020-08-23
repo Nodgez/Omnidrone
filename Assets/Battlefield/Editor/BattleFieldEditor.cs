@@ -28,6 +28,8 @@ public class BattleFieldEditor : EditorWindow
 	{
 		battlefield = GameObject.FindGameObjectWithTag("Battlefield").GetComponent<Battlefield>();
 		armyControllers = FindObjectsOfType<ArmyController>().ToDictionary(x => x.tag);
+		foreach (var key in armyControllers.Keys)
+			armyControllers[key].ClearEmptyUnits();
 		Undo.RecordObject(battlefield.gameObject, "battlefield");
 	}
 

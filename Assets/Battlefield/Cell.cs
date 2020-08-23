@@ -35,6 +35,7 @@ public class Cell : MonoBehaviour, IInteractable
 			TurnManager.Instance.ActiveArmy.MoveSelectedUnit(this);//might move this down a level into the Army controller
 	}
 
+
 	public static Vector3Int[] CubicDirections = new Vector3Int[]
 	{
 		new Vector3Int(1, -1, 0),
