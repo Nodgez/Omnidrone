@@ -17,7 +17,7 @@ public abstract class CellUnit : MonoBehaviour
 	public int AttackRange { get { return unitStats.attackRange; } }
 	public int AttackDamage { get { return unitStats.damage; } }
 
-	public int Attacks = 1;
+	public int Attacks { get; private set;}
 
 	private void Awake()
 	{
@@ -71,6 +71,10 @@ public abstract class CellUnit : MonoBehaviour
 			//remove from the army and teh battlefield
 		}
 	}
+	public void Attack()
+	{
+		Attacks--;
+	}
 
 
 
@@ -82,11 +86,6 @@ public abstract class CellUnit : MonoBehaviour
 
 		currentCell = cell;
 		currentCell.cellUnit = this;
-	}
-
-	public void Attack()
-	{
-		Attacks--;
 	}
 #endif
 }

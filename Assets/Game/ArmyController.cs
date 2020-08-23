@@ -6,43 +6,22 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public abstract class ArmyController : MonoBehaviour
 {
-	private CellUnit selectedUnit;
-	private CellUnit selectedTarget;
-	private List<Cell> actionableCells = new List<Cell>();
+	protected CellUnit selectedUnit;
+	protected List<Cell> actionableCells = new List<Cell>();
 
 	[SerializeField]
-	private List<CellUnit> army = new List<CellUnit>();
+	protected List<CellUnit> army = new List<CellUnit>();
 
 	public int SelectionLimit { get; set; }
 	public bool HasLost{ get{ return army.Count > 0; } }
 	public abstract void StartArmy();
 	public abstract void FinalizeArmy();
+	public abstract void SelectUnit(CellUnit unit);
+
 	protected virtual void Awake()
 	{
 		SelectionLimit = 1;
 		army.ForEach(unit => unit.onDeath.AddListener(RemoveUnitFromArmy));
-	}
-	
-
-	public void SelectUnit(CellUnit unit)
-	{
-		ClearActionableCellRange();
-
-		//selected ally unity
-		if (unit.tag == tag)
-		{
-			selectedUnit = unit;
-			var movementCells = Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.CurrentMovementRange, (x) => { return !x.Occupied; });
-			var enemyCells = Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.AttackRange, (x) => { return x.Occupied && !x.cellUnit.CompareTag(tag); });
-
-			actionableCells = new List<Cell>();
-			actionableCells.AddRange(enemyCells);
-			actionableCells.AddRange(movementCells);
-		}
-		else
-			AttackSelectedUnit(unit);
-
-		SetActionableCellMarkers();
 	}
 
 	public void RemoveUnitFromArmy(CellUnit unitToRemove)
@@ -50,7 +29,7 @@ public abstract class ArmyController : MonoBehaviour
 		army.Remove(unitToRemove);
 	}
 
-	public void RefreshArmy()
+	protected void RefreshArmy()
 	{
 		foreach (var unit in army)
 		{
@@ -58,7 +37,7 @@ public abstract class ArmyController : MonoBehaviour
 		}
 	}
 
-	private void SetActionableCellMarkers()
+	protected void SetActionableCellMarkers()
 	{
 		var moveMaterial = new MaterialPropertyBlock();
 		moveMaterial.SetColor("_Color", Color.blue);
@@ -78,7 +57,7 @@ public abstract class ArmyController : MonoBehaviour
 		}
 	}
 	
-	private void ClearActionableCellRange()
+	protected void ClearActionableCellRange()
 	{
 		foreach (var cell in actionableCells)
 			cell.meshRenderer.SetPropertyBlock(null);
@@ -90,16 +69,15 @@ public abstract class ArmyController : MonoBehaviour
 	{
 		if (selectedUnit == null)
 			return;
-		print(string.Format("Moving Unit From: {0} , To: {1} ", selectedUnit.currentCell.ToString(), target.ToString()));
 		var movePath = Battlefield.Instance.FindPath(selectedUnit.currentCell, target, selectedUnit.CurrentMovementRange);
 		selectedUnit.MoveAlongPath(movePath);
 
 		ClearActionableCellRange();
 	}
 
-	public void AttackSelectedUnit(CellUnit target)
+	public void AttackUnitOnCell(CellUnit target)
 	{
-		if (selectedUnit != null)
+		if (selectedUnit != null && selectedUnit.Attacks > 0)
 		{
 			selectedUnit.Attack();
 			target.AlterHealth(-selectedUnit.AttackDamage);

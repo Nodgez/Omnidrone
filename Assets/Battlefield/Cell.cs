@@ -26,13 +26,18 @@ public class Cell : MonoBehaviour, IInteractable
 
 	public void Interact()
 	{
-		print("Cell interacted with");
 		if (Occupied)
 		{
 			TurnManager.Instance.ActiveArmy.SelectUnit(cellUnit);
 		}
 		else
 			TurnManager.Instance.ActiveArmy.MoveSelectedUnit(this);//might move this down a level into the Army controller
+	}
+
+
+	public bool IsAllyCell(string unitTag)
+	{
+		return cellUnit.CompareTag(unitTag);
 	}
 
 
