@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(MeshRenderer))]
 public abstract class CellUnit : MonoBehaviour
 {
 	[SerializeField]
 	private CellUnitStats unitStats = null;
 	public Cell currentCell;
-
 	public OnDeath onDeath = new OnDeath();
+
+	private MeshRenderer meshRenderer;
 
 	public int CurrentMovementRange { get; private set; }
 	public int CurrentHealth { get; private set; }
@@ -21,16 +23,25 @@ public abstract class CellUnit : MonoBehaviour
 
 	private void Awake()
 	{
+		meshRenderer = GetComponent<MeshRenderer>();
 		RefreshStats();
 	}
-	public void MoveAlongPath(Stack<Cell> path)
+	public void MoveAlongPath(Stack<Cell> path, Action onMoveComplete = null)
 	{
 		if (CurrentMovementRange <= 0)
 			return;
-		StartCoroutine(CO_MoveAlongPath(path));
+		StartCoroutine(CO_MoveAlongPath(path, onMoveComplete));
+	}
+	
+	public void MoveAlongPath(Stack<Cell> path, out Coroutine moveRoutine, Action onMoveComplete = null)
+	{
+		if (CurrentMovementRange <= 0)
+			moveRoutine = null;
+		else
+			moveRoutine = StartCoroutine(CO_MoveAlongPath(path, onMoveComplete));
 	}
 
-	private  IEnumerator CO_MoveAlongPath(Stack<Cell> path)
+	private  IEnumerator CO_MoveAlongPath(Stack<Cell> path, Action onMoveComplete)
 	{
 		while (path.Count > 0)
 		{
@@ -50,6 +61,8 @@ public abstract class CellUnit : MonoBehaviour
 			currentCell.cellUnit = null;
 			currentCell = target;
 		}
+
+		onMoveComplete?.Invoke();
 	}
 
 	public void RefreshStats()
@@ -67,13 +80,28 @@ public abstract class CellUnit : MonoBehaviour
 		{
 			onDeath?.Invoke(this);
 			Destroy(this.gameObject);
-			print("Unit Dead");
-			//remove from the army and teh battlefield
 		}
 	}
-	public void Attack()
+	public void Attack(CellUnit target)
 	{
+		if (Attacks < 1)
+			return;
 		Attacks--;
+		target.AlterHealth(-AttackDamage);
+		//animate
+	}
+
+	public void Highlight()
+	{
+		var highlightProperty = new MaterialPropertyBlock();
+		highlightProperty.SetFloat("_FirstOutlineWidth", 0.25f);
+
+		meshRenderer.SetPropertyBlock(highlightProperty);
+	}
+	
+	public void UnHighlight()
+	{
+		meshRenderer.SetPropertyBlock(null);
 	}
 
 

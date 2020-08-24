@@ -35,6 +35,8 @@ public class BattleFieldEditor : EditorWindow
 
 	public void OnGUI()
 	{
+		if (EditorApplication.isPlayingOrWillChangePlaymode)
+			return;
 		DrawGenerationFields();
 		DrawCellUnitSelection();
 	}

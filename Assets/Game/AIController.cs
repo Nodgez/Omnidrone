@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class AIController : ArmyController
 {
+
+	private Coroutine moveRoutine = null;
+
 	public override void FinalizeArmy()
 	{
 		
@@ -11,13 +14,24 @@ public class AIController : ArmyController
 
 	public override void SelectUnit(CellUnit unit)
 	{
-		selectedUnit = unit;
+		if (unit.CompareTag(tag))
+			selectedUnit = unit;
+		else
+			selectedUnit.Attack(unit);
+	}
+
+	public override void MoveSelectedUnit(Cell target)
+	{
+		var movePath = Battlefield.Instance.FindPath(selectedUnit.currentCell, target, selectedUnit.CurrentMovementRange);
+		selectedUnit.MoveAlongPath(movePath, out moveRoutine);
+		ClearActionableCellRange();
 	}
 
 	public override void StartArmy()
 	{
 		StartCoroutine(CO_UpdateArmy());
 		RefreshArmy();
+
 	}
 
 	IEnumerator CO_UpdateArmy()
@@ -31,12 +45,17 @@ public class AIController : ArmyController
 			var movementCells = Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.CurrentMovementRange, (cell) => { return !cell.Occupied; });
 
 			if (enemyCells.Count > 0)
-				AttackUnitOnCell(enemyCells[0].cellUnit);
-				
-			if (movementCells.Count > 0)
-				MoveSelectedUnit(movementCells.GetRandomElement());
+			{
+				SelectUnit(enemyCells[0].cellUnit);
+				yield return new WaitForSeconds(1f);
+			}
 
-			yield return new WaitForSeconds(2f);
+			if (movementCells.Count > 0)
+			{
+				MoveSelectedUnit(movementCells.GetRandomElement());
+				if (moveRoutine != null)
+					yield return moveRoutine;
+			}
 		}
 		yield return new WaitForSeconds(2f);
 		TurnManager.Instance.EndTurn();

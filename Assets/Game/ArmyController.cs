@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [DisallowMultipleComponent]
 public abstract class ArmyController : MonoBehaviour
@@ -13,10 +14,14 @@ public abstract class ArmyController : MonoBehaviour
 	protected List<CellUnit> army = new List<CellUnit>();
 
 	public int SelectionLimit { get; set; }
-	public bool HasLost{ get{ return army.Count > 0; } }
+	public bool HasLost{ get{ return army.Count < 1; } }
 	public abstract void StartArmy();
 	public abstract void FinalizeArmy();
 	public abstract void SelectUnit(CellUnit unit);
+	public abstract void MoveSelectedUnit(Cell target);
+
+	[HideInInspector]
+	public UnityEvent onArmyLost = new UnityEvent();
 
 	protected virtual void Awake()
 	{
@@ -27,6 +32,9 @@ public abstract class ArmyController : MonoBehaviour
 	public void RemoveUnitFromArmy(CellUnit unitToRemove)
 	{
 		army.Remove(unitToRemove);
+
+		if (army.Count < 1)
+			onArmyLost?.Invoke();
 	}
 
 	protected void RefreshArmy()
@@ -63,25 +71,6 @@ public abstract class ArmyController : MonoBehaviour
 			cell.meshRenderer.SetPropertyBlock(null);
 
 		actionableCells.Clear();
-	}
-
-	public void MoveSelectedUnit(Cell target)
-	{
-		if (selectedUnit == null)
-			return;
-		var movePath = Battlefield.Instance.FindPath(selectedUnit.currentCell, target, selectedUnit.CurrentMovementRange);
-		selectedUnit.MoveAlongPath(movePath);
-
-		ClearActionableCellRange();
-	}
-
-	public void AttackUnitOnCell(CellUnit target)
-	{
-		if (selectedUnit != null && selectedUnit.Attacks > 0)
-		{
-			selectedUnit.Attack();
-			target.AlterHealth(-selectedUnit.AttackDamage);
-		}
 	}
 
 #if UNITY_EDITOR
