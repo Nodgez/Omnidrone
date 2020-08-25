@@ -3307,7 +3307,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 963194227}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -5180,11 +5180,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1175828920}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1b8f4269cc04ec4381aba47a42f1a5a, type: 3}
+  m_Script: {fileID: 11500000, guid: 2048ed2829809d6428c1d55967e60110, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <TurnNumber>k__BackingField: 0
-  <ActiveArmy>k__BackingField: {fileID: 0}
   armies:
   - {fileID: 1100024916}
   - {fileID: 1380973525}

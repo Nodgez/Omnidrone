@@ -31,12 +31,14 @@ public class MessagePopup : MonoBehaviour
 	}
 	public void Show(string message)
 	{
+		StopAllCoroutines();
 		messageText.text = message;
 		StartCoroutine(CO_ShowTimedMessage());
 	}
 
 	public void Show(string message, params Tuple<string, UnityAction>[] inputOptions)
 	{
+		StopAllCoroutines();
 		canvasGroup.interactable = true;
 		canvasGroup.blocksRaycasts = true;
 		messageText.text = message;

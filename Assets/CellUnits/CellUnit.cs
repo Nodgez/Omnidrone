@@ -21,6 +21,7 @@ public abstract class CellUnit : MonoBehaviour
 
 	public int CurrentMovementRange { get; private set; }
 	public int CurrentHealth { get; private set; }
+	public int MaxHealth { get { return unitStats.maxHealth; } }
 	public int AttackRange { get { return unitStats.attackRange; } }
 	public int AttackDamage { get { return unitStats.damage; } }
 
@@ -98,7 +99,7 @@ public abstract class CellUnit : MonoBehaviour
 	}
 	public void Attack(CellUnit target)
 	{
-		if (Attacks < 1)
+		if (Attacks < 1 || Cell.Distance(target.currentCell.cubePoint, currentCell.cubePoint) > AttackRange)
 			return;
 		Attacks--;
 		target.AlterHealth(-AttackDamage);

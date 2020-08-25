@@ -23,10 +23,15 @@ public class DiageticUi : MonoBehaviour
 		else if (instance != this)
 			Destroy(this.gameObject);
 	}
-	public void AddUnitHPBar(CellUnit unit)
+	public void AddUnitHPBar(CellUnit cellUnit)
 	{
-		unitHealthMap.Add(unit, Instantiate(healthBarPrefab, sliderParent));
-		unit.onHealthAltered.AddListener(UpdateHealthBar);
+		var newhealthbarInstance = Instantiate(healthBarPrefab, sliderParent);
+		newhealthbarInstance.maxValue = cellUnit.MaxHealth;
+		newhealthbarInstance.value = cellUnit.MaxHealth;
+		unitHealthMap.Add(cellUnit, newhealthbarInstance);
+
+		cellUnit.onHealthAltered.AddListener((unit) => unitHealthMap[unit].value = unit.CurrentHealth);
+		cellUnit.onDeath.AddListener(ClearHealthBar);
 	}
 
 	private void Update()
@@ -38,9 +43,10 @@ public class DiageticUi : MonoBehaviour
 		}
 	}
 
-	private void UpdateHealthBar(CellUnit unit)
+	private void ClearHealthBar(CellUnit unit)
 	{
-		unitHealthMap[unit].value = unit.CurrentHealth;
+		Destroy(unitHealthMap[unit].gameObject);
+		unitHealthMap.Remove(unit);
 	}
 		
 }
