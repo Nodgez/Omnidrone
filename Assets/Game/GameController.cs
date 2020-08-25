@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-public class TurnManager : MonoBehaviour
+public class GameController : MonoBehaviour
 {
-	private static TurnManager instance;
-	public static TurnManager Instance
+	private static GameController instance;
+	public static GameController Instance
 	{
 		get { return instance; }
 	}
@@ -18,7 +18,11 @@ public class TurnManager : MonoBehaviour
 
 	public void Start()
 	{
-		instance = this;
+		if (instance == null)
+			instance = this;
+		else if (instance != this)
+			Destroy(this.gameObject);
+
 		ActiveArmy = armies[TurnNumber % armies.Length];
 		ActiveArmy.StartArmy();
 		MessagePopup.Instance.Show(ActiveArmy.tag + " turn");

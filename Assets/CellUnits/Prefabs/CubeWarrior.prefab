@@ -10,8 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 7100603723641875546}
   - component: {fileID: 1839520831798069551}
+  - component: {fileID: -7609453677362815213}
+  - component: {fileID: -1430617940219354243}
   - component: {fileID: 2301511393627007509}
   - component: {fileID: 1609753500746276715}
+  - component: {fileID: 3408236027057129118}
   m_Layer: 0
   m_Name: CubeWarrior
   m_TagString: Player
@@ -47,6 +50,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitStats: {fileID: 11400000, guid: f0e7f179c18dc4041a62737100986a0d, type: 2}
   currentCell: {fileID: 0}
+  hitIndicator: {fileID: -1430617940219354243}
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  selectionIndicator: {fileID: -7609453677362815213}
+--- !u!114 &-7609453677362815213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5058384451456910235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b93b04484998c54daaa444d55d9fb6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-1430617940219354243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5058384451456910235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d8c26c79a16e2e488d7d83f4e4e62ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  indicationRGB: {r: 1, g: 0, b: 0, a: 1}
 --- !u!33 &2301511393627007509
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -94,3 +127,22 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!95 &3408236027057129118
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5058384451456910235}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

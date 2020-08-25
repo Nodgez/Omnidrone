@@ -5,6 +5,7 @@ using UnityEngine;
 public class Cell : MonoBehaviour, IInteractable
 {
 	public CellUnit cellUnit;
+	public int cellIndex;
 	public Vector2Int point;
 	public Vector3Int cubePoint;
 
@@ -18,20 +19,21 @@ public class Cell : MonoBehaviour, IInteractable
 	{
 		meshRenderer = GetComponent<MeshRenderer>();
 	}
-	public void SetUp(float size, Vector2Int center)
+	public void SetUp(int columnCount, int rowCount, Vector2Int center)
 	{
 		this.point = center;
 		this.cubePoint = EvenCol2Cube(point);
+		this.cellIndex = Point2Index(point, columnCount, rowCount);
 	}
 
 	public void Interact()
 	{
 		if (Occupied)
 		{
-			TurnManager.Instance.ActiveArmy.SelectUnit(cellUnit);
+			GameController.Instance.ActiveArmy.SelectUnit(cellUnit);
 		}
 		else
-			TurnManager.Instance.ActiveArmy.MoveSelectedUnit(this);//might move this down a level into the Army controller
+			GameController.Instance.ActiveArmy.MoveSelectedUnit(this);//might move this down a level into the Army controller
 	}
 
 
@@ -72,15 +74,21 @@ public class Cell : MonoBehaviour, IInteractable
 		return new Vector3Int(x, y, z);
 	}
 
-	public static int Point2Index(Vector2Int point, int mapWidth)
+	public static int Point2Index(Vector2Int point, int columnCount, int rowCount)
 	{
-		return point.y + (point.x * mapWidth);
+		var isColumnOutOfBounds = point.x >= columnCount || point.x < 0;
+		var isRowOutOfBounds = point.y >= rowCount || point.y < 0;
+
+		if (isColumnOutOfBounds || isColumnOutOfBounds)
+			return -1;
+
+		return point.x + (point.y * columnCount);
 	}
 	
-	public static int Point2Index(Vector3Int point, int mapWidth)
+	public static int Point2Index(Vector3Int point, int columnCount, int rowCount)
 	{
 		var offsetPoint = Cube2EvenCol(point);
-		return Point2Index(offsetPoint, mapWidth);
+		return Point2Index(offsetPoint, columnCount, rowCount);
 	}
 
 	public override string ToString()

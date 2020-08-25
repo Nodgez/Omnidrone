@@ -25,7 +25,7 @@ public class PlayerController : ArmyController
 	{
 		input.enabled = false;
 		ClearActionableCellRange();
-		selectedUnit.UnHighlight();
+		(selectedUnit as CubeWarrior).UnHighlight();
 		playerUI.Off();
 	}
 
@@ -34,10 +34,10 @@ public class PlayerController : ArmyController
 		//selected ally unity
 		if (unit.tag == tag)
 		{
-			selectedUnit.UnHighlight();
+			(selectedUnit as CubeWarrior).UnHighlight();
 
 			selectedUnit = unit;
-			selectedUnit.Highlight();
+			(selectedUnit as CubeWarrior).Highlight();
 
 			FindAndShowActionableCells();
 		}
@@ -63,7 +63,7 @@ public class PlayerController : ArmyController
 	private void FindAndShowActionableCells()
 	{
 		ClearActionableCellRange();
-		var movementCells = Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.CurrentMovementRange, (cell) => { return !cell.Occupied; });
+		var movementCells = Battlefield.Instance.Search(selectedUnit.currentCell, selectedUnit.CurrentMovementRange);// (cell) => { return !cell.Occupied; });
 		var enemyCells = selectedUnit.Attacks < 1 ? new List<Cell>() :
 			Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.AttackRange, (cell) => { return cell.Occupied && !cell.IsAllyCell(tag); });
 

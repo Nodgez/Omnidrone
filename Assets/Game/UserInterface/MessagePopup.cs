@@ -20,7 +20,7 @@ public class MessagePopup : MonoBehaviour
 	public RectTransform inputOptionParent;
 	public Text messageText;
 
-	private void Start()
+	private void Awake()
 	{
 		canvasGroup = GetComponent<CanvasGroup>();
 

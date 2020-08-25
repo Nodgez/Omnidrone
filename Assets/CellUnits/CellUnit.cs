@@ -4,15 +4,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(MeshRenderer))]
+[RequireComponent(typeof(Animator))]
 public abstract class CellUnit : MonoBehaviour
 {
 	[SerializeField]
 	private CellUnitStats unitStats = null;
-	public Cell currentCell;
-	public OnDeath onDeath = new OnDeath();
 
-	private MeshRenderer meshRenderer;
+	private Animator animator;
+
+	public Cell currentCell;
+	public Indicator hitIndicator;
+
+	[HideInInspector]
+	public OnDeath onDeath = new OnDeath();
+	public OnHealthAltered onHealthAltered= new OnHealthAltered();
 
 	public int CurrentMovementRange { get; private set; }
 	public int CurrentHealth { get; private set; }
@@ -23,7 +28,7 @@ public abstract class CellUnit : MonoBehaviour
 
 	private void Awake()
 	{
-		meshRenderer = GetComponent<MeshRenderer>();
+		animator = GetComponent<Animator>();
 		RefreshStats();
 	}
 	public void MoveAlongPath(Stack<Cell> path, Action onMoveComplete = null)
@@ -76,9 +81,18 @@ public abstract class CellUnit : MonoBehaviour
 	{
 		CurrentHealth += changeInHealth;
 
+		if (onHealthAltered != null)
+			onHealthAltered.Invoke(this);
+
+		var negative = changeInHealth < 0;
+		if (negative)
+			hitIndicator.Indicate();
+	
 		if (CurrentHealth <= 0)
 		{
-			onDeath?.Invoke(this);
+			currentCell.cellUnit = null;
+			if (onDeath != null)
+				onDeath.Invoke(this);
 			Destroy(this.gameObject);
 		}
 	}
@@ -91,26 +105,12 @@ public abstract class CellUnit : MonoBehaviour
 		//animate
 	}
 
-	public void Highlight()
-	{
-		var highlightProperty = new MaterialPropertyBlock();
-		highlightProperty.SetFloat("_FirstOutlineWidth", 0.25f);
-
-		meshRenderer.SetPropertyBlock(highlightProperty);
-	}
-	
-	public void UnHighlight()
-	{
-		meshRenderer.SetPropertyBlock(null);
-	}
-
-
 
 #if UNITY_EDITOR
 	public void SetOnCell(Cell cell)
 	{
-		if (currentCell != null)
-			currentCell.cellUnit = null; 
+		if (cell.cellUnit != null)
+			DestroyImmediate(currentCell.cellUnit);
 
 		currentCell = cell;
 		currentCell.cellUnit = this;
@@ -120,3 +120,4 @@ public abstract class CellUnit : MonoBehaviour
 
 [Serializable]
 public class OnDeath : UnityEvent<CellUnit> { }
+public class OnHealthAltered : UnityEvent<CellUnit> { }

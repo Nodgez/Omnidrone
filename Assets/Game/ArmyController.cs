@@ -26,7 +26,7 @@ public abstract class ArmyController : MonoBehaviour
 	protected virtual void Awake()
 	{
 		SelectionLimit = 1;
-		army.ForEach(unit => unit.onDeath.AddListener(RemoveUnitFromArmy));
+		army.ForEach(unit => InitializeUnit(unit));
 	}
 
 	public void RemoveUnitFromArmy(CellUnit unitToRemove)
@@ -43,6 +43,12 @@ public abstract class ArmyController : MonoBehaviour
 		{
 			unit.RefreshStats();
 		}
+	}
+
+	private void InitializeUnit(CellUnit unit)
+	{
+		unit.onDeath.AddListener(RemoveUnitFromArmy);
+		DiageticUi.Instance.AddUnitHPBar(unit);
 	}
 
 	protected void SetActionableCellMarkers()

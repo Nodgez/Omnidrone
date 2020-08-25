@@ -18,7 +18,7 @@ public class Battlefield : MonoBehaviour
 	public List<Cell> cellData;
 	private Mesh hexMesh;
 	[SerializeField]
-	private int width, bredth;
+	private int columnCount, rowCount;
 
 	public void Awake()
 	{
@@ -26,13 +26,13 @@ public class Battlefield : MonoBehaviour
 	}
 
 #if UNITY_EDITOR
-	public void Initialize(int width, int bredth)
+	public void Initialize(int columnCount, int rowCount)
 	{
-		this.width = width;
-		this.bredth = bredth;
+		this.columnCount = columnCount;
+		this.rowCount = rowCount;
 		tag = "Battlefield";
 
-		cellData = new List<Cell>(width * bredth);
+		cellData = new List<Cell>(columnCount * rowCount);
 	}
 	#endif
 	public void RenderCells(Material defaultMaterial = null)
@@ -50,7 +50,7 @@ public class Battlefield : MonoBehaviour
 
 		};
 		hexMesh.name = "HexCell";
-		cellData.OrderBy(cell => Cell.Point2Index(cell.point, width));
+		cellData = cellData.OrderBy(cell => Cell.Point2Index(cell.point, columnCount, rowCount)).ToList();
 		cellData.ForEach(cell => RenderCell(cell, defaultMaterial));		
 	}
 
@@ -77,7 +77,7 @@ public class Battlefield : MonoBehaviour
 		var fringes = new List<List<Cell>>();
 		fringes.Add(new List<Cell>() { start });
 
-		for (int k = 1; k < movement; k++)
+		for (int k = 1; k <= movement; k++)
 		{
 			fringes.Add(new List<Cell>());
 			foreach (var cell in fringes[k - 1])
@@ -87,9 +87,11 @@ public class Battlefield : MonoBehaviour
 				{
 					var neighbour = neighbours[n];
 					if (!neighbour.Occupied && !visited.Contains(neighbour))
+					{
 						visited.Add(neighbour);
+						fringes[k].Add(neighbour);
+					}
 
-					fringes[k].Add(neighbour);
 				}
 			}
 		}
@@ -99,15 +101,18 @@ public class Battlefield : MonoBehaviour
 
 	public List<Cell> GetTilesInRange(Cell center, int range, Predicate<Cell> predicate)
 	{
+		var originalRange = range;
 		var results = new List<Cell>();
 		for (var x = -range; x <= range; x++)
+		{
 			for (var y = -range; y <= range; y++)
+			{
 				for (var z = -range; z <= range; z++)
 				{
 					if (x + y + z == 0)
 					{
 						var cubicIndex = center.cubePoint + new Vector3Int(x, y, z);
-						var index = Cell.Point2Index(cubicIndex, width);
+						var index = Cell.Point2Index(cubicIndex, columnCount, rowCount);
 						if (index < 0 || index > cellData.Count - 1)
 							continue;
 						var cellAtDistance = cellData[index];
@@ -116,6 +121,8 @@ public class Battlefield : MonoBehaviour
 							results.Add(cellAtDistance);
 					}
 				}
+			}
+		}
 
 		return results;
 	}
@@ -159,7 +166,9 @@ public class Battlefield : MonoBehaviour
 		while (currentCellToAdd != start)
 		{
 			path.Push(currentCellToAdd);
-			print(currentCellToAdd.ToString() + " added to path");
+			//the path is broken and cannot be traversed
+			if (!walkedPath.ContainsKey(currentCellToAdd))
+				return new Stack<Cell>();
 			currentCellToAdd = walkedPath[currentCellToAdd];
 		}
 
@@ -175,7 +184,7 @@ public class Battlefield : MonoBehaviour
 		for (var dir = 0; dir < Cell.CubicDirections.Length; dir++)
 		{
 			var neightborCube = cell.cubePoint + Cell.CubicDirections[dir];
-			var key = Cell.Point2Index(neightborCube, width);
+			var key = Cell.Point2Index(neightborCube, columnCount, rowCount);
 			if (key < 0 || key > cellData.Count - 1)
 				continue;
 

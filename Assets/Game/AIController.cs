@@ -42,7 +42,7 @@ public class AIController : ArmyController
 			var enemyCells = selectedUnit.Attacks < 1 ? new List<Cell>() :
 							Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.AttackRange, (cell) => { return cell.Occupied && !cell.IsAllyCell(tag); });
 
-			var movementCells = Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.CurrentMovementRange, (cell) => { return !cell.Occupied; });
+			var movementCells = Battlefield.Instance.Search(selectedUnit.currentCell, selectedUnit.CurrentMovementRange);// (cell) => { return !cell.Occupied; });
 
 			if (enemyCells.Count > 0)
 			{
@@ -58,6 +58,6 @@ public class AIController : ArmyController
 			}
 		}
 		yield return new WaitForSeconds(2f);
-		TurnManager.Instance.EndTurn();
+		GameController.Instance.EndTurn();
 	}
 }

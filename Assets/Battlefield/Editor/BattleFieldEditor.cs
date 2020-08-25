@@ -9,7 +9,7 @@ using System.Linq;
 
 public class BattleFieldEditor : EditorWindow
 {
-	private int width = 10, bredth = 10, cellSize = 1;
+	private int columns = 10, rows = 10, cellSize = 1;
 	private Material defaultMaterial;
 	private Battlefield battlefield;
 	private Vector2 assetScroll;
@@ -89,20 +89,19 @@ public class BattleFieldEditor : EditorWindow
 			return;
 		}
 
-		width = EditorGUILayout.IntField("Width", width);
-		bredth = EditorGUILayout.IntField("Breath", bredth);
-		cellSize = EditorGUILayout.IntField("Size", cellSize);
+		columns = EditorGUILayout.IntField("Width", columns);
+		rows = EditorGUILayout.IntField("Breath", rows);
 		defaultMaterial = EditorGUILayout.ObjectField("Default Material", defaultMaterial, typeof(Material), false) as Material;
 		if (GUILayout.Button("Create Cells"))
 		{
 			EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-			battlefield.Initialize(width, bredth);
-			for (var x = 0; x < width; x++)
+			battlefield.Initialize(columns, rows);
+			for (var x = 0; x < columns; x++)
 			{
-				for (var z = 0; z < bredth; z++)
+				for (var z = 0; z < rows; z++)
 				{
 					var newCell = new GameObject(string.Format("Cell [{0}, {1}]", x, z)).AddComponent<Cell>();
-					newCell.SetUp(cellSize, new Vector2Int(x, z));
+					newCell.SetUp(columns, rows, new Vector2Int(x, z));
 					battlefield.cellData.Add(newCell);
 				}
 			}
@@ -112,9 +111,9 @@ public class BattleFieldEditor : EditorWindow
 		if (GUILayout.Button("Clear Cells"))
 		{
 			EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-			for (var x = 0; x < width; x++)
+			for (var x = 0; x < columns; x++)
 			{
-				for (var z = 0; z < bredth; z++)
+				for (var z = 0; z < rows; z++)
 				{
 					battlefield.cellData.Clear();
 				}
