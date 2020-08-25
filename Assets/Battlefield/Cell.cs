@@ -33,7 +33,7 @@ public class Cell : MonoBehaviour, IInteractable
 			GameController.Instance.ActiveArmy.SelectUnit(cellUnit);
 		}
 		else
-			GameController.Instance.ActiveArmy.MoveSelectedUnit(this);//might move this down a level into the Army controller
+			GameController.Instance.ActiveArmy.MoveSelectedUnit(this);
 	}
 
 
@@ -127,7 +127,7 @@ public class CellConfig
 			var angleDegree = 60 * i;
 			var angleRadian = Mathf.Deg2Rad * angleDegree;
 
-			Vertices[i] = new Vector3(size * Mathf.Cos(angleRadian), 0, size * Mathf.Sin(angleRadian));
+			Vertices[i] = new Vector3(size * Mathf.Cos(angleRadian), -0.5f, size * Mathf.Sin(angleRadian));
 		}
 	}
 }

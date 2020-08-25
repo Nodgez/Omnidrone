@@ -19,6 +19,8 @@ public class Battlefield : MonoBehaviour
 	private Mesh hexMesh;
 	[SerializeField]
 	private int columnCount, rowCount;
+	public int ColumnCount { get{ return columnCount; } }
+	public int RowCount{ get{ return rowCount; } }
 
 	public void Awake()
 	{
@@ -99,7 +101,7 @@ public class Battlefield : MonoBehaviour
 		return visited;
 	}
 
-	public List<Cell> GetTilesInRange(Cell center, int range, Predicate<Cell> predicate)
+	public List<Cell> GetCellsInRange(Cell center, int range, Predicate<Cell> predicate)
 	{
 		var originalRange = range;
 		var results = new List<Cell>();
@@ -129,7 +131,7 @@ public class Battlefield : MonoBehaviour
 
 	public List<Cell> GetTilesInRange(Cell center, int range)
 	{
-		return GetTilesInRange(center, range, (x) => { return true; });
+		return GetCellsInRange(center, range, (x) => { return true; });
 	}
 	public Stack<Cell> FindPath(Cell start, Cell end, int range)
 	{

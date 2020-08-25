@@ -11,6 +11,8 @@ public class CellUnitStats : ScriptableObject
 	public int moveRange = 3;
 	[Range(1,5)]
 	public int attackRange = 2;
+	[Range(5,8)]
+	public int visionRange = 5;
 	[Range(5, 50)]
 	public int damage = 10;
 }

@@ -65,7 +65,7 @@ public class PlayerController : ArmyController
 		ClearActionableCellRange();
 		var movementCells = Battlefield.Instance.Search(selectedUnit.currentCell, selectedUnit.CurrentMovementRange);// (cell) => { return !cell.Occupied; });
 		var enemyCells = selectedUnit.Attacks < 1 ? new List<Cell>() :
-			Battlefield.Instance.GetTilesInRange(selectedUnit.currentCell, selectedUnit.AttackRange, (cell) => { return cell.Occupied && !cell.IsAllyCell(tag); });
+			Battlefield.Instance.GetCellsInRange(selectedUnit.currentCell, selectedUnit.AttackRange, (cell) => { return cell.Occupied && !cell.IsAllyCell(tag); });
 
 		actionableCells = new List<Cell>();
 		actionableCells.AddRange(enemyCells);

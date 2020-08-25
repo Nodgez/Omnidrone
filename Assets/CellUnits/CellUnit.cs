@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(Animator))]
-public abstract class CellUnit : MonoBehaviour
+public abstract class CellUnit : MonoBehaviour, IInteractable
 {
 	[SerializeField]
 	private CellUnitStats unitStats = null;
@@ -23,6 +23,7 @@ public abstract class CellUnit : MonoBehaviour
 	public int CurrentHealth { get; private set; }
 	public int MaxHealth { get { return unitStats.maxHealth; } }
 	public int AttackRange { get { return unitStats.attackRange; } }
+	public int VisionRange{ get { return unitStats.visionRange; } }
 	public int AttackDamage { get { return unitStats.damage; } }
 
 	public int Attacks { get; private set;}
@@ -30,7 +31,7 @@ public abstract class CellUnit : MonoBehaviour
 	private void Awake()
 	{
 		animator = GetComponent<Animator>();
-		RefreshStats();
+		RefreshStats(true);
 	}
 	public void MoveAlongPath(Stack<Cell> path, Action onMoveComplete = null)
 	{
@@ -55,11 +56,13 @@ public abstract class CellUnit : MonoBehaviour
 			target.cellUnit = this;
 
 			float t = 0;
-			Vector3 start = transform.position;
+			var startPosition = transform.position;
+			var startRotation = transform.rotation;
+			
 			while (t < 1)
 			{
 				t += Mathf.Clamp01(t + Time.deltaTime);
-				transform.position = Vector3.Lerp(start, target.transform.position, t);
+				transform.position = Vector3.Lerp(startPosition, target.transform.position, t);
 				yield return null;
 			}
 			CurrentMovementRange--;
@@ -71,11 +74,13 @@ public abstract class CellUnit : MonoBehaviour
 		onMoveComplete?.Invoke();
 	}
 
-	public void RefreshStats()
+	public void RefreshStats(bool withHealth = false)
 	{
 		Attacks = 1;
 		CurrentMovementRange = unitStats.moveRange;
-		CurrentHealth = unitStats.maxHealth;
+
+		if (withHealth)
+			CurrentHealth = MaxHealth;
 	}
 
 	public void AlterHealth(int changeInHealth)
@@ -104,6 +109,11 @@ public abstract class CellUnit : MonoBehaviour
 		Attacks--;
 		target.AlterHealth(-AttackDamage);
 		//animate
+	}
+
+	public void Interact()
+	{
+		currentCell.Interact();
 	}
 
 

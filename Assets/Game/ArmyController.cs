@@ -13,7 +13,6 @@ public abstract class ArmyController : MonoBehaviour
 	[SerializeField]
 	protected List<CellUnit> army = new List<CellUnit>();
 
-	public int SelectionLimit { get; set; }
 	public bool HasLost{ get{ return army.Count < 1; } }
 	public abstract void StartArmy();
 	public abstract void FinalizeArmy();
@@ -25,7 +24,6 @@ public abstract class ArmyController : MonoBehaviour
 
 	protected virtual void Awake()
 	{
-		SelectionLimit = 1;
 		army.ForEach(unit => InitializeUnit(unit));
 	}
 

@@ -15,7 +15,8 @@ GameObject:
   - component: {fileID: 2301511393627007509}
   - component: {fileID: 1609753500746276715}
   - component: {fileID: 3408236027057129118}
-  m_Layer: 0
+  - component: {fileID: 2008855533196779104}
+  m_Layer: 9
   m_Name: CubeWarrior
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -146,3 +147,16 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!65 &2008855533196779104
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5058384451456910235}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
