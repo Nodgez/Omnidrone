@@ -50,6 +50,13 @@ public abstract class CellUnit : MonoBehaviour, IInteractable
 
 	private  IEnumerator CO_MoveAlongPath(Stack<Cell> path, Action onMoveComplete)
 	{
+		animator.SetBool("Walking", true);
+		while (!animator.IsInTransition(0))
+			yield return null;
+		var transition = animator.GetAnimatorTransitionInfo(0);
+		
+		print(transition.fullPathHash + ": " + transition.duration);
+		yield return new WaitForSeconds(transition.duration);
 		while (path.Count > 0)
 		{
 			var target = path.Pop();
@@ -70,7 +77,7 @@ public abstract class CellUnit : MonoBehaviour, IInteractable
 			currentCell.cellUnit = null;
 			currentCell = target;
 		}
-
+		animator.SetBool("Walking", false);
 		onMoveComplete?.Invoke();
 	}
 
@@ -102,13 +109,33 @@ public abstract class CellUnit : MonoBehaviour, IInteractable
 			Destroy(this.gameObject);
 		}
 	}
+
 	public void Attack(CellUnit target)
 	{
 		if (Attacks < 1 || Cell.Distance(target.currentCell.cubePoint, currentCell.cubePoint) > AttackRange)
 			return;
+		StartCoroutine(CO_Attack(target));
+	}
+	
+	public void Attack(CellUnit target, out Coroutine attackRoutine)
+	{
+		if (Attacks < 1 || Cell.Distance(target.currentCell.cubePoint, currentCell.cubePoint) > AttackRange)
+			attackRoutine = null;
+		else
+			attackRoutine = StartCoroutine(CO_Attack(target));
+	}
+
+	private IEnumerator CO_Attack(CellUnit target)
+	{
+		while (animator.IsInTransition(0))
+			yield return null;
+		animator.SetTrigger("Attack");
+
+		while (!animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+			yield return null;
+
 		Attacks--;
 		target.AlterHealth(-AttackDamage);
-		//animate
 	}
 
 	public void Interact()
