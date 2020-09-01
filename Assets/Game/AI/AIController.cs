@@ -5,8 +5,7 @@ using UnityEngine;
 
 public class AIController : ArmyController
 {
-
-	private Coroutine moveRoutine = null;
+	private Coroutine moveRoutine = null, attackRoutine = null;
 
 	public override void FinalizeArmy()
 	{
@@ -18,7 +17,7 @@ public class AIController : ArmyController
 		if (unit.CompareTag(tag))
 			selectedUnit = unit;
 		else
-			selectedUnit.Attack(unit);
+			selectedUnit.Attack(unit, out attackRoutine);
 	}
 
 	public override void MoveSelectedUnit(Cell target)
@@ -56,7 +55,6 @@ public class AIController : ArmyController
 					yield return moveRoutine;
 
 				yield return StartCoroutine(SearchForAndAttack());
-
 			}
 		}
 		yield return new WaitForSeconds(1f);
@@ -71,7 +69,7 @@ public class AIController : ArmyController
 		if (enemyCells.Count > 0)
 		{
 			SelectUnit(enemyCells[0].cellUnit);
-			yield return new WaitForSeconds(1f);
+			yield return attackRoutine;
 		}
 	}
 }
