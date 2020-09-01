@@ -7,7 +7,7 @@ public class CellUnitStats : ScriptableObject
 {
 	[Range(50,100)]
 	public int maxHealth = 100;
-	[Range(1, 5)]
+	[Range(0, 5)]
 	public int moveRange = 3;
 	[Range(1,5)]
 	public int attackRange = 2;

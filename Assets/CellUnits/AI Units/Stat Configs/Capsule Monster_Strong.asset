@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c6c819c3b155e74a8235920aeef8b5f, type: 3}
-  m_Name: Capsule Monster
+  m_Name: Capsule Monster_Strong
   m_EditorClassIdentifier: 
-  maxHealth: 50
+  maxHealth: 100
   moveRange: 3
-  attackRange: 2
-  visionRange: 8
-  damage: 5
+  attackRange: 3
+  visionRange: 7
+  damage: 15

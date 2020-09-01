@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Sword_And_Shield.unity
     guid: b23f5bc1743b9c24eba727d6965aaeff
+  - enabled: 1
+    path: Assets/Scenes/Funnel.unity
+    guid: 5be4c2daf22df484d9c430dceb78a599
+  - enabled: 1
+    path: Assets/Scenes/Stranded.unity
+    guid: 0fd3aef07cabfd84ba67ff2bfb4fbfa3
   m_configObjects: {}

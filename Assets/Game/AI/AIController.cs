@@ -44,7 +44,6 @@ public class AIController : ArmyController
 
 			var enemiesInVision = Battlefield.Instance.GetCellsInRange(selectedUnit.currentCell, selectedUnit.VisionRange, (cell) => { return cell.Occupied && !cell.IsAllyCell(tag); });
 			var movementCells = Battlefield.Instance.Search(selectedUnit.currentCell, selectedUnit.CurrentMovementRange);
-
 			if (movementCells.Count > 0)
 			{
 				Cell closeEnemy = null;

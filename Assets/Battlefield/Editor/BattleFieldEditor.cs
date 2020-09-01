@@ -43,16 +43,26 @@ public class BattleFieldEditor : EditorWindow
 
 	private void DrawCellUnitSelection()
 	{
+		GUILayout.Label("Cell Units");
 		assetScroll = GUILayout.BeginScrollView(assetScroll);
-		var dirInfo = new DirectoryInfo(Application.dataPath + CELL_UNIT_PATH);
-		var cellUnitFiles = dirInfo.GetFiles("*.prefab");
-		//var cellUnitsPaths = AssetDatabase.();
-		foreach (var unit in cellUnitFiles)
-		{
-			if (GUILayout.Button(unit.Name))
-			{
+		RenderUnitSelectionForArmy("Player/");
+		RenderUnitSelectionForArmy("AI/");
 
-				var prefab = AssetDatabase.LoadAssetAtPath("Assets" + CELL_UNIT_PATH + unit.Name, typeof(GameObject));
+		GUILayout.EndScrollView();
+	}
+
+	private void RenderUnitSelectionForArmy(string armyFolder)
+	{
+		GUILayout.Label(armyFolder);
+		var dirInfo = new DirectoryInfo(Application.dataPath + CELL_UNIT_PATH + armyFolder);
+		var playerUnits = dirInfo.GetFiles("*.prefab");
+		//var cellUnitsPaths = AssetDatabase.();
+		foreach (var unit in playerUnits)
+		{
+			var buttonText = unit.Name.Substring(0, unit.Name.Length - 7);
+			if (GUILayout.Button(buttonText))
+			{
+				var prefab = AssetDatabase.LoadAssetAtPath("Assets" + CELL_UNIT_PATH + armyFolder + unit.Name, typeof(GameObject));
 				var selectedCellObjects = Selection.objects.Where(x => IsSelectedObjectCell(x));
 				foreach (var cell in selectedCellObjects)
 				{
@@ -69,8 +79,6 @@ public class BattleFieldEditor : EditorWindow
 				EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
 			}
 		}
-
-		GUILayout.EndScrollView();
 	}
 
 	private void DrawGenerationFields()
@@ -111,34 +119,22 @@ public class BattleFieldEditor : EditorWindow
 		if (GUILayout.Button("Clear Cells"))
 		{
 			EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-			for (var x = 0; x < columns; x++)
-			{
-				for (var z = 0; z < rows; z++)
-				{
-					battlefield.cellData.Clear();
-				}
-			}
+			battlefield.cellData.Clear();
 			battlefield.transform.Find("Cells").ClearChildrenImmediate();
 			battlefield.transform.Find("Units").ClearChildrenImmediate();
 		}
 
-		//if (GUILayout.Button("Test Path"))
-		//{
-		//	var materialPropertyBlock = new MaterialPropertyBlock();
-		//	materialPropertyBlock.SetColor("_Color", Color.white);
+		if (GUILayout.Button("Mark Unwalkable"))
+		{
+			var selectedCellObjects = Selection.objects.Where(x => IsSelectedObjectCell(x));
+			foreach (var cell in selectedCellObjects)
+			{
+				var cellComponent = (cell as GameObject).GetComponent<Cell>();
+				cellComponent.unWalkable = true;
+				(cell as GameObject).GetComponent<MeshRenderer>().enabled = false;
+			}
+		}
 
-		//	battlefield.cellData.ForEach(
-		//	pathCell =>
-		//		pathCell.GetComponent<MeshRenderer>().SetPropertyBlock(materialPropertyBlock)
-		//	);
-		//		var startIndex = Cell.Point2Index(new Vector2Int(1, 1), width);
-		//	var endIndex = Cell.Point2Index(new Vector2Int(3, 6), width);
-		//	materialPropertyBlock.SetColor("_Color", Color.green);
-		//	battlefield.FindPath(battlefield.cellData[startIndex], battlefield.cellData[endIndex]).ForEach(
-		//		pathCell =>
-		//		pathCell.GetComponent<MeshRenderer>().SetPropertyBlock(materialPropertyBlock)
-		//	);
-		//}
 		GUILayout.EndVertical();
 	}
 

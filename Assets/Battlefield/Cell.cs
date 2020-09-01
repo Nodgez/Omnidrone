@@ -8,6 +8,7 @@ public class Cell : MonoBehaviour, IInteractable
 	public int cellIndex;
 	public Vector2Int point;
 	public Vector3Int cubePoint;
+	public bool unWalkable;
 
 	public MeshRenderer meshRenderer { get; private set; }
 	public bool Occupied

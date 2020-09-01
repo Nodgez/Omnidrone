@@ -64,7 +64,7 @@ public abstract class ArmyController : MonoBehaviour
 					cell.meshRenderer.SetPropertyBlock(attackMaterial);
 			}
 
-			else
+			else if(!cell.unWalkable)
 				cell.meshRenderer.SetPropertyBlock(moveMaterial);
 		}
 	}

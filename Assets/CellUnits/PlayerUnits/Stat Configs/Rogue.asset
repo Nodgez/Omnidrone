@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c6c819c3b155e74a8235920aeef8b5f, type: 3}
-  m_Name: Cube Warrior
+  m_Name: Rogue
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  moveRange: 3
+  maxHealth: 80
+  moveRange: 5
   attackRange: 2
   visionRange: 5
-  damage: 50
+  damage: 20

@@ -88,7 +88,7 @@ public class Battlefield : MonoBehaviour
 				for (var n = 0; n < neighbours.Count; n++)
 				{
 					var neighbour = neighbours[n];
-					if (!neighbour.Occupied && !visited.Contains(neighbour))
+					if (!neighbour.Occupied && !neighbour.unWalkable && !visited.Contains(neighbour))
 					{
 						visited.Add(neighbour);
 						fringes[k].Add(neighbour);
@@ -153,7 +153,7 @@ public class Battlefield : MonoBehaviour
 
 			foreach (var neighbour in neighbours)
 			{
-				if (neighbour.Occupied)
+				if (neighbour.Occupied || neighbour.unWalkable)
 					continue;
 				if (!walkedPath.ContainsKey(neighbour))
 				{

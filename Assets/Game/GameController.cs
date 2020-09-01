@@ -49,7 +49,7 @@ public class GameController : MonoBehaviour
 
 	private void PlayAgain()
 	{
-		SceneManager.LoadScene(0);
+		SceneManager.LoadScene(Random.Range(0, SceneManager.sceneCountInBuildSettings));
 	}
 
 	private void QuitGame()
